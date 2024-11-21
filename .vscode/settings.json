@@ -1,0 +1,44 @@
+{
+  "python.defaultInterpreterPath": ".venv/bin/python",
+  "python.terminal.activateEnvironment": false,
+  "python.terminal.activateEnvInCurrentTerminal": false,
+  "python.analysis.typeCheckingMode": "strict",
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.unusedImports": "explicit",
+      "source.organizeImports": "explicit",
+      "source.convertImportFormat": "explicit",
+    },
+  },
+  "isort.args": [
+    "--profile",
+    "black"
+  ],
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.venv": true,
+  },
+  "restoreTerminals.terminals": [
+    {
+      "splitTerminals": [
+        {
+          "name": "server",
+          "commands": [
+            "./scripts/run.sh"
+          ]
+        },
+      ]
+    },
+    {
+      "splitTerminals": [
+        {
+          "name": "bash",
+          "commands": []
+        }
+      ]
+    },
+  ],
+}

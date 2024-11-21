@@ -12,6 +12,7 @@ services:
     environment:
       TZ: ${TZ} # Timezone
       GITHUB_TOKEN: ${GITHUB_TOKEN} # Github CLI
+      LOGGING_LEVEL: "DEBUG" # Python logging
       POSTGRES_URI: postgresql://developer:developer@postgres:5432/developer
 
   postgres:
