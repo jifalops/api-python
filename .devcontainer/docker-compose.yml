@@ -1,6 +1,6 @@
 version: "3.8"
 services:
-  fastapi-docker:
+  api-python:
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
@@ -8,7 +8,7 @@ services:
     depends_on:
       - postgres
     volumes:
-      - ..:/fastapi-docker:cached
+      - ..:/api-python:cached
     environment:
       TZ: ${TZ} # Timezone
       GITHUB_TOKEN: ${GITHUB_TOKEN} # Github CLI

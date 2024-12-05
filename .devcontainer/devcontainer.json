@@ -1,9 +1,9 @@
 {
-  "name": "fastapi-docker",
+  "name": "api-python",
   "dockerComposeFile": "./docker-compose.yml",
-  "service": "fastapi-docker",
+  "service": "api-python",
   "remoteUser": "developer",
-  "workspaceFolder": "/fastapi-docker",
+  "workspaceFolder": "/api-python",
   "postCreateCommand": ".devcontainer/post-create.sh",
   "customizations": {
     "vscode": {

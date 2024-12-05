@@ -1,4 +1,4 @@
-# FastAPI-Docker Template
+# Api-Python Template
 
 A template repo for a rich dev-container for developing a FastAPI backend that deploys to a Docker container.
 
