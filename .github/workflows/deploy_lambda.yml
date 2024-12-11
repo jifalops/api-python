@@ -15,7 +15,7 @@ on:
       - ".github/workflows/deploy_lambda.yml"
 
 env:
-  DEPLOY_LAMBDA: true
+  DEPLOY_LAMBDA: "true"
   STACK_NAME: api-python
   AWS_REGION: us-east-2
   LOGGING_LEVEL: INFO
@@ -24,7 +24,7 @@ env:
 jobs:
   sam-deploy:
     runs-on: ubuntu-latest
-    if: ${{ env.DEPLOY_LAMBDA }}
+    if: ${{ env.DEPLOY_LAMBDA == 'true' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
