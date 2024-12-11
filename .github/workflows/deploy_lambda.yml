@@ -1,0 +1,80 @@
+# AWS Example SAM Deploy: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/deploying-using-github.html
+name: Deploy Lambda
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "pytest.ini"
+      - ".pytest.ini"
+      - "pyproject.toml"
+      - "pyproject.lock"
+      - "tests/**"
+      - "*.py"
+      - "app/**"
+
+env:
+  DEPLOY_LAMBDA: true
+  STACK_NAME: api-python
+  AWS_REGION: us-east-2
+  LOGGING_LEVEL: INFO
+  WORKERS: 1
+
+
+jobs:
+  sam-deploy:
+    runs-on: ubuntu-latest
+    if: ${{ env.DEPLOY_LAMBDA }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run tests
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'poetry'
+        run: |
+            pip install poetry
+            poetry install --no-interaction
+            poetry run pytest
+
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Get ECR URI
+        run: |
+          REPO_URI=$(aws cloudformation describe-stacks \
+            --stack-name ${{ env.STACK_NAME }} \
+            --query 'Stacks[0].Outputs[?OutputKey==`RepositoryUri`].OutputValue' \
+            --output text)
+          echo "REPO_URI=${REPO_URI}" >> $GITHUB_ENV
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Generate image tag
+        run: |
+          IMAGE_TAG=$(git rev-parse --short HEAD)
+          echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
+
+      - name: Build and push image
+        run: |
+          docker build -f deploy/docker/Dockerfile -t ${{ env.REPO_URI }}:${{ env.IMAGE_TAG }} .
+          docker push ${{ env.REPO_URI }}:${{ env.IMAGE_TAG }}
+
+      - uses: aws-actions/setup-sam@v2
+      - run: |
+          cd deploy/aws_sam
+          sam deploy \
+            --no-confirm-changeset \
+            --no-fail-on-empty-changeset \
+            --parameter-overrides \
+              ImageTag="${{ env.IMAGE_TAG }}" \
+              LoggingLevel="${{ env.LOGGING_LEVEL }}" \
+              Workers="${{ env.WORKERS }}" \
+              PostgresUri="${{ secrets.POSTGRES_URI }}" \
+              Neo4jUri="${{ secrets.NEO4J_URI }}" \
+              Neo4jPassword="${{ secrets.NEO4J_PASSWORD }}"

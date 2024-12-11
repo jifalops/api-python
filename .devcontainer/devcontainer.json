@@ -5,8 +5,15 @@
   "remoteUser": "developer",
   "workspaceFolder": "/api-python",
   "postCreateCommand": ".devcontainer/post-create.sh",
+  "features": {
+    "ghcr.io/devcontainers/features/aws-cli:1": {},
+    "ghcr.io/audacioustux/devcontainers/aws-sam-cli:1": {}
+  },
   "customizations": {
     "vscode": {
+      "settings": {
+        "dev.containers.dockerCredentialHelper": false
+      },
       "extensions": [
         "ms-python.python",
         "ms-python.black-formatter",
@@ -14,7 +21,8 @@
         "Cameron.vscode-pytest",
         "EthanSK.restore-terminals",
         "tamasfe.even-better-toml",
-        "mtxr.sqltools"
+        "mtxr.sqltools",
+        "redhat.vscode-yaml"
       ]
     }
   }

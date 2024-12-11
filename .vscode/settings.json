@@ -30,10 +30,20 @@
             "./scripts/run.sh"
           ]
         },
+      ]
+    },
+    {
+      "splitTerminals": [
         {
           "name": "preview Docker",
           "commands": [
             "./scripts/preview_docker.sh"
+          ]
+        },
+        {
+          "name": "preview SAM",
+          "commands": [
+            "./scripts/preview_sam.sh"
           ]
         },
       ]
@@ -46,5 +56,25 @@
         }
       ]
     },
+  ],
+  // CloudFormation intrinsic functions.
+  "yaml.customTags": [
+    "!And",
+    "!If",
+    "!Not",
+    "!Equals",
+    "!Or",
+    "!FindInMap sequence",
+    "!Base64",
+    "!Cidr",
+    "!Ref",
+    "!Sub",
+    "!GetAtt",
+    "!GetAZs",
+    "!ImportValue",
+    "!Select",
+    "!Select sequence",
+    "!Split",
+    "!Join sequence"
   ],
 }

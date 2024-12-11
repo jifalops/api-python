@@ -1,0 +1,91 @@
+# Template sections: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-template-anatomy.html
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  LoggingLevel:
+    Type: String
+    Default: INFO
+  Workers:
+    Type: Number
+    Default: "1"
+  ImageTag:
+    Type: String
+    Description: Docker image tag to deploy
+    Default: ""
+  PostgresUri:
+    Type: String
+  Neo4jUri:
+    Type: String
+  Neo4jPassword:
+    Type: String
+
+Conditions:
+  IsLocal: !Equals [!Ref ImageTag, ""]
+
+Resources:
+  ApiRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub ${AWS::StackName}
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      ImageTagMutability: MUTABLE
+
+  # https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#httpapi
+  ApiGateway:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowMethods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - OPTIONS
+        AllowHeaders:
+          - Content-Type
+          - Authorization
+        AllowOrigins:
+          - "*"
+
+  # https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Timeout: 10
+      MemorySize: 128
+      PackageType: Image
+      ImageUri: !If
+        - IsLocal
+        - api-python_lambda
+        - !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${AWS::StackName}:${ImageTag}
+      ImageConfig:
+        Command: ["app.main.lambda_handler"]
+      Environment:
+        Variables:
+          LOGGING_LEVEL: !Ref LoggingLevel
+          WORKERS: !Ref Workers
+          POSTGRES_URI: !Ref PostgresUri
+          NEO4J_URI: !Ref Neo4jUri
+          NEO4J_PASSWORD: !Ref Neo4jPassword
+      Events:
+        RootRoute:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ApiGateway
+            Path: /
+            Method: ANY
+        ApiEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ApiGateway
+            Path: /{proxy+}
+            Method: ANY
+
+Outputs:
+  ApiEndpoint:
+    Description: HTTP API Gateway endpoint URL
+    Value: !Sub https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com
+  RepositoryUri:
+    Description: ECR Repository URI
+    Value: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${AWS::StackName}

@@ -2,6 +2,7 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from mangum import Mangum
 from starlette.middleware.cors import CORSMiddleware
 
 from app.app import App
@@ -37,5 +38,7 @@ app_router.add_middleware(
 for router in routers:
     app_router.include_router(router)
 app_router.get("/")(lambda: {"Hello": "World"})
+
+lambda_handler = Mangum(app_router)
 
 logging.info("App initialized!")
