@@ -20,9 +20,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: "poetry"
+          cache: "pytest"
       - name: Run tests
         run: |
-          pip install poetry
-          poetry install --no-interaction
-          poetry run pytest
+          python -m pytest
