@@ -1,0 +1,28 @@
+name: Test
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "pytest.ini"
+      - ".pytest.ini"
+      - "pyproject.toml"
+      - "pyproject.lock"
+      - "tests/**"
+      - "*.py"
+      - "app/**"
+jobs:
+  cargo-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run tests
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'poetry'
+        run: |
+            pip install poetry
+            poetry install --no-interaction
+            poetry run pytest
