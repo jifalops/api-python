@@ -26,26 +26,11 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
-      - run: pip install pytest
+      - run: |
+          pip install poetry
+          poetry install --no-interaction
       - name: Run tests
-        run: python -m pytest
-
-      - name: Install and configure Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: 1.7.1
-          virtualenvs-create: true
-
-      - name: Load cached dependencies
-        id: cached-poetry-dependencies
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
-
-      - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction
+        run: poetry run pytest
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
