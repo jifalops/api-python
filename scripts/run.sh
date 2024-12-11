@@ -7,6 +7,6 @@ pushd $script_dir/.. > /dev/null
 
 poetry lock
 poetry install --no-root
-poetry run python -m uvicorn app.main:app_router --reload --log-level trace
+poetry run python -m uvicorn app.main:app_router --reload --log-level trace --host 0.0.0.0
 
 popd > /dev/null

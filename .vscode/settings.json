@@ -25,9 +25,15 @@
     {
       "splitTerminals": [
         {
-          "name": "server",
+          "name": "dev",
           "commands": [
             "./scripts/run.sh"
+          ]
+        },
+        {
+          "name": "preview Docker",
+          "commands": [
+            "./scripts/preview_docker.sh"
           ]
         },
       ]
