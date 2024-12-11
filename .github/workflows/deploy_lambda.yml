@@ -20,23 +20,21 @@ env:
   LOGGING_LEVEL: INFO
   WORKERS: 1
 
-
 jobs:
   sam-deploy:
     runs-on: ubuntu-latest
     if: ${{ env.DEPLOY_LAMBDA }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Run tests
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-          cache: 'poetry'
+          python-version: "3.12"
+          cache: "poetry"
+      - name: Run tests
         run: |
-            pip install poetry
-            poetry install --no-interaction
-            poetry run pytest
+          pip install poetry
+          poetry install --no-interaction
+          poetry run pytest
 
       - uses: aws-actions/configure-aws-credentials@v1
         with:

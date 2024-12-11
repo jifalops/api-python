@@ -16,13 +16,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Run tests
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-          cache: 'poetry'
+          python-version: "3.12"
+          cache: "poetry"
+      - name: Run tests
         run: |
-            pip install poetry
-            poetry install --no-interaction
-            poetry run pytest
+          pip install poetry
+          poetry install --no-interaction
+          poetry run pytest
