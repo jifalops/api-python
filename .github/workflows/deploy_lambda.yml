@@ -12,6 +12,7 @@ on:
       - "tests/**"
       - "*.py"
       - "app/**"
+      - ".github/workflows/deploy_lambda.yml"
 
 env:
   DEPLOY_LAMBDA: true

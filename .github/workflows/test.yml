@@ -11,6 +11,7 @@ on:
       - "tests/**"
       - "*.py"
       - "app/**"
+      - ".github/workflows/test.yml"
 jobs:
   cargo-test:
     runs-on: ubuntu-latest
