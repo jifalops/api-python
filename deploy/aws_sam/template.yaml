@@ -8,10 +8,6 @@ Parameters:
   Workers:
     Type: Number
     Default: "1"
-  ImageTag:
-    Type: String
-    Description: Docker image tag to deploy
-    Default: ""
   PostgresUri:
     Type: String
   Neo4jUri:
@@ -19,18 +15,7 @@ Parameters:
   Neo4jPassword:
     Type: String
 
-Conditions:
-  IsLocal: !Equals [!Ref ImageTag, ""]
-
 Resources:
-  ApiRepository:
-    Type: AWS::ECR::Repository
-    Properties:
-      RepositoryName: !Sub ${AWS::StackName}
-      ImageScanningConfiguration:
-        ScanOnPush: true
-      ImageTagMutability: MUTABLE
-
   # https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#httpapi
   ApiGateway:
     Type: AWS::Serverless::HttpApi
@@ -52,15 +37,11 @@ Resources:
   ApiFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Timeout: 10
-      MemorySize: 128
-      PackageType: Image
-      ImageUri: !If
-        - IsLocal
-        - api-python_lambda
-        - !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${AWS::StackName}:${ImageTag}
-      ImageConfig:
-        Command: ["app.main.lambda_handler"]
+      Runtime: python3.12
+      Handler: app.main.lambda_handler
+      CodeUri: ./
+      Timeout: 30
+      MemorySize: 256
       Environment:
         Variables:
           LOGGING_LEVEL: !Ref LoggingLevel
@@ -86,6 +67,3 @@ Outputs:
   ApiEndpoint:
     Description: HTTP API Gateway endpoint URL
     Value: !Sub https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com
-  RepositoryUri:
-    Description: ECR Repository URI
-    Value: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${AWS::StackName}
