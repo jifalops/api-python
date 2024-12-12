@@ -1,5 +1,7 @@
 # Api-Python Template
 
+[![Deploy Lambda](https://github.com/jifalops/api-python/actions/workflows/deploy_lambda.yml/badge.svg)](https://github.com/jifalops/api-python/actions/workflows/deploy_lambda.yml)
+
 A template repo for a rich dev-container for developing a FastAPI backend that deploys to a Docker container.
 
 ## Features
