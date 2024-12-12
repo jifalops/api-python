@@ -1,5 +1,5 @@
-# https://github.com/jifalops/devcontainers/tree/main/images/python/.devcontainer
-FROM jifalops/python:latest
+# https://github.com/jifalops/devcontainers/tree/main/images/python-lambda/.devcontainer
+FROM jifalops/python-lambda:latest
 
 # Install additional packages
 RUN export DEBIAN_FRONTEND=noninteractive && sudo apt-get update && sudo apt-get install -y --no-install-recommends \

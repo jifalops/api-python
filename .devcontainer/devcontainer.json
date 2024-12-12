@@ -4,11 +4,9 @@
   "service": "api-python",
   "remoteUser": "developer",
   "workspaceFolder": "/api-python",
+  "initializeCommand": ".devcontainer/host-init.sh",
   "postCreateCommand": ".devcontainer/post-create.sh",
-  "features": {
-    "ghcr.io/devcontainers/features/aws-cli:1": {},
-    "ghcr.io/audacioustux/devcontainers/aws-sam-cli:1": {}
-  },
+  "postStartCommand": ".devcontainer/post-start.sh",
   "customizations": {
     "vscode": {
       "settings": {
