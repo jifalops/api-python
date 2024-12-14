@@ -17,9 +17,9 @@ def test_signup_data_invalid_email():
 
 def test_signup_data_missing_email():
     with pytest.raises(ValidationError):
-        SignUpData(password="strongpassword123")
+        SignUpData(password="strongpassword123")  # type: ignore
 
 
 def test_signup_data_missing_password():
     with pytest.raises(ValidationError):
-        SignUpData(email="test@example.com")
+        SignUpData(email="test@example.com")  # type: ignore

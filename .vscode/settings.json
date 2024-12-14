@@ -35,15 +35,25 @@
     {
       "splitTerminals": [
         {
-          "name": "preview Docker",
+          "name": "Docker preview",
           "commands": [
             "./scripts/preview_docker.sh"
           ]
         },
         {
-          "name": "preview SAM",
+          "name": "SAM preview",
           "commands": [
             "./scripts/preview_sam.sh"
+          ]
+        },
+      ]
+    },
+    {
+      "splitTerminals": [
+        {
+          "name": "stripe",
+          "commands": [
+            "./scripts/stripe-listen.sh"
           ]
         },
       ]

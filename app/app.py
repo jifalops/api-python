@@ -1,8 +1,10 @@
 from dataclasses import dataclass
-from typing import List
 
 from app.auth.service import AuthService
-from app.base_service import BaseService
+from app.service import Service
+from app.subscription.service import SubscriptionService
+from app.subscription_portal.service import SubscriptionPortalService
+from app.user.service import UserService
 
 
 @dataclass
@@ -14,10 +16,16 @@ class App:
     """
 
     auth: AuthService
+    subscription: SubscriptionService
+    subscription_portal: SubscriptionPortalService
+    user: UserService
 
     def __post_init__(self):
-        self._services: List[BaseService] = [
+        self._services: list[Service] = [
             self.auth,
+            self.subscription,
+            self.subscription_portal,
+            self.user,
         ]
         for service in self._services:
             service._set_app(self)  # type: ignore

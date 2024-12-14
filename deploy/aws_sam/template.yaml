@@ -14,7 +14,10 @@ Parameters:
     Type: String
   Neo4jPassword:
     Type: String
-
+  StripeSecretKey:
+    Type: String
+  StripeWebhookSecret:
+    Type: String
 Resources:
   # https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#httpapi
   ApiGateway:
@@ -49,6 +52,8 @@ Resources:
           POSTGRES_URI: !Ref PostgresUri
           NEO4J_URI: !Ref Neo4jUri
           NEO4J_PASSWORD: !Ref Neo4jPassword
+          STRIPE_SECRET_KEY: !Ref StripeSecretKey
+          STRIPE_WEBHOOK_SECRET: !Ref StripeWebhookSecret
       Events:
         RootRoute:
           Type: HttpApi

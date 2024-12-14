@@ -7,6 +7,9 @@
   "initializeCommand": ".devcontainer/host-init.sh",
   "postCreateCommand": ".devcontainer/post-create.sh",
   "postStartCommand": ".devcontainer/post-start.sh",
+  "features": {
+    "ghcr.io/nullcoder/devcontainer-features/stripe-cli:1": {}
+  },
   "customizations": {
     "vscode": {
       "settings": {

@@ -21,3 +21,8 @@ fi
 
 # Activate the virtual environment.
 echo "source \"$(pwd)/.venv/bin/activate\"" >> ~/.bashrc
+
+# Add bash completion for the Stripe CLI.
+mkdir -p ~/.local/share/bash-completion/completions && \
+stripe completion --shell bash && \
+mv stripe-completion.bash ~/.local/share/bash-completion/completions/stripe

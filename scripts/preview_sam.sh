@@ -9,9 +9,7 @@ $script_dir/build-sam.sh
 pushd "$script_dir/../deploy/aws_sam" > /dev/null
 
 # Use SAM to start the API.
-HOST_API_PORT=${HOST_API_PORT:-8000}
-port=$((HOST_API_PORT + 2))
-sam local start-api --debug --host 0.0.0.0 --port $port \
+sam local start-api --debug --host 0.0.0.0 --port 8002 \
   --parameter-overrides \
     LoggingLevel="$LOGGING_LEVEL" \
     Workers=1 \

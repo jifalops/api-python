@@ -5,7 +5,7 @@ FROM jifalops/python-lambda:latest
 RUN export DEBIAN_FRONTEND=noninteractive && sudo apt-get update && sudo apt-get install -y --no-install-recommends \
     trash-cli
 
-# Install neo4j-migrations
+# Install neo4j-migrations (The SDKMAN installer on https://containers.dev/features is extremely slow)
 RUN VERSION=$(basename $(curl -Ls -o /dev/null -w %{url_effective} https://github.com/michael-simons/neo4j-migrations/releases/latest)) && \
     ZIP_LINUX=https://github.com/michael-simons/neo4j-migrations/releases/download/${VERSION}/neo4j-migrations-${VERSION}-linux-x86_64.zip && \
     curl -L $ZIP_LINUX -o nmig.zip && \
