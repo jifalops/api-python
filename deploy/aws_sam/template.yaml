@@ -18,6 +18,15 @@ Resources:
           - Authorization
         AllowOrigins:
           - "*"
+      Auth:
+        Authorizers:
+          FirebaseAuthorizer:
+            IdentitySource: $request.header.Authorization
+            JwtConfiguration:
+              issuer: !Sub "https://securetoken.google.com/{{resolve:ssm:/api-python/firebase-project-id}}"
+              audience:
+                - !Sub "{{resolve:ssm:/api-python/firebase-project-id}}"
+        DefaultAuthorizer: ""
 
   # https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
   ApiFunction:
@@ -38,6 +47,8 @@ Resources:
           STRIPE_SECRET_KEY: !Sub "{{resolve:secretsmanager:stripe-secret-key:SecretString}}"
           STRIPE_WEBHOOK_SECRET: !Sub "{{resolve:secretsmanager:stripe-webhook-secret:SecretString}}"
           FIREBASE_PROJECT_ID: !Sub "{{resolve:ssm:/api-python/firebase-project-id}}"
+          GOOGLE_APPLICATION_CREDENTIALS: !Sub "{{resolve:secretmanager:google-application-credentials:SecretString}}"
+          VERIFY_TOKEN_SIGNATURE: 0
       Events:
         RootRoute:
           Type: HttpApi
@@ -51,6 +62,8 @@ Resources:
             ApiId: !Ref ApiGateway
             Path: /{proxy+}
             Method: ANY
+            Auth:
+              Authorizer: FirebaseAuthorizer
 
 Outputs:
   ApiEndpoint:

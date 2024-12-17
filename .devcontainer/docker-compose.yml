@@ -32,6 +32,7 @@ services:
       # Firebase
       FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID}
       FIREBASE_AUTH_EMULATOR_HOST: localhost:9099
+      VERIFY_TOKEN_SIGNATURE: 0
 
   postgres:
     image: postgres

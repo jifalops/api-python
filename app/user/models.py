@@ -7,7 +7,7 @@ from app.subscription.models import SubscriptionLevel
 
 type Role = Literal["admin", "disabled"]
 
-type SignInMethod = Literal["email_password"]
+type SignInMethod = Literal["password", "anonymous"]
 
 
 class User(BaseModel):

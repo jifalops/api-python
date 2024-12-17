@@ -16,5 +16,5 @@ echo "source \"$(pwd)/.venv/bin/activate\"" >> ~/.bashrc
 
 # Add bash completion for the Stripe CLI.
 mkdir -p ~/.local/share/bash-completion/completions && \
-stripe completion --shell bash && \
+stripe completion --shell bash > /dev/null && \
 mv stripe-completion.bash ~/.local/share/bash-completion/completions/stripe
