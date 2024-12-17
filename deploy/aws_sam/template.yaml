@@ -1,23 +1,6 @@
 # Template sections: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-template-anatomy.html
 Transform: AWS::Serverless-2016-10-31
 
-Parameters:
-  LoggingLevel:
-    Type: String
-    Default: INFO
-  Workers:
-    Type: Number
-    Default: "1"
-  PostgresUri:
-    Type: String
-  Neo4jUri:
-    Type: String
-  Neo4jPassword:
-    Type: String
-  StripeSecretKey:
-    Type: String
-  StripeWebhookSecret:
-    Type: String
 Resources:
   # https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#httpapi
   ApiGateway:
@@ -47,13 +30,14 @@ Resources:
       MemorySize: 256
       Environment:
         Variables:
-          LOGGING_LEVEL: !Ref LoggingLevel
-          WORKERS: !Ref Workers
-          POSTGRES_URI: !Ref PostgresUri
-          NEO4J_URI: !Ref Neo4jUri
-          NEO4J_PASSWORD: !Ref Neo4jPassword
-          STRIPE_SECRET_KEY: !Ref StripeSecretKey
-          STRIPE_WEBHOOK_SECRET: !Ref StripeWebhookSecret
+          LOGGING_LEVEL: !Sub "{{resolve:ssm:/api-python/logging-level}}"
+          POSTGRES_URI: !Sub "{{resolve:secretsmanager:postgres-uri:SecretString}}"
+          NEO4J_URI: !Sub "{{resolve:secretsmanager:neo4j-uri:SecretString}}"
+          NEO4J_PASSWORD: !Sub "{{resolve:secretsmanager:neo4j-password:SecretString}}"
+          STRIPE_PUBLIC_KEY: !Sub "{{resolve:ssm:/api-python/stripe-public-key}}"
+          STRIPE_SECRET_KEY: !Sub "{{resolve:secretsmanager:stripe-secret-key:SecretString}}"
+          STRIPE_WEBHOOK_SECRET: !Sub "{{resolve:secretsmanager:stripe-webhook-secret:SecretString}}"
+          FIREBASE_PROJECT_ID: !Sub "{{resolve:ssm:/api-python/firebase-project-id}}"
       Events:
         RootRoute:
           Type: HttpApi
