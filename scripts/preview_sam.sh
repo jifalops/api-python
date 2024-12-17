@@ -8,13 +8,26 @@ $script_dir/build-sam.sh
 
 pushd "$script_dir/../deploy/aws_sam" > /dev/null
 
+cat <<EOF > .env.json
+{
+  "Parameters": {
+    "Environment": {
+      "Variables": {
+        "LOGGING_LEVEL": "$LOGGING_LEVEL",
+        "POSTGRES_URI": "$POSTGRES_URI",
+        "NEO4J_URI": "$NEO4J_URI",
+        "NEO4J_PASSWORD": "$NEO4J_PASSWORD",
+        "STRIPE_PUBLIC_KEY": "$STRIPE_PUBLIC_KEY",
+        "STRIPE_SECRET_KEY": "$STRIPE_SECRET_KEY",
+        "STRIPE_WEBHOOK_SECRET": "$STRIPE_WEBHOOK_SECRET",
+        "FIREBASE_PROJECT_ID": "$FIREBASE_PROJECT_ID"
+      }
+    }
+  }
+}
+EOF
+
 # Use SAM to start the API.
-sam local start-api --debug --host 0.0.0.0 --port 8002 \
-  --parameter-overrides \
-    LoggingLevel="$LOGGING_LEVEL" \
-    Workers=1 \
-    PostgresUri="$POSTGRES_URI" \
-    Neo4jUri="$NEO4J_URI" \
-    Neo4jPassword="$NEO4J_PASSWORD"
+sam local start-api --debug --host 0.0.0.0 --port 8002 --env-vars .env.json
 
 popd > /dev/null

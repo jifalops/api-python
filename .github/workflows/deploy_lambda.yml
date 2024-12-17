@@ -13,12 +13,6 @@ on:
       - "app/**"
       - ".github/workflows/deploy_lambda.yml"
 
-env:
-  STACK_NAME: api-python
-  AWS_REGION: us-east-2
-  LOGGING_LEVEL: INFO
-  WORKERS: 1
-
 jobs:
   sam-deploy:
     runs-on: ubuntu-latest
@@ -38,7 +32,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - uses: aws-actions/setup-sam@v2
 
@@ -50,10 +44,4 @@ jobs:
           cd deploy/aws_sam
           sam deploy \
             --no-confirm-changeset \
-            --no-fail-on-empty-changeset \
-            --parameter-overrides \
-              LoggingLevel="${{ env.LOGGING_LEVEL }}" \
-              Workers="${{ env.WORKERS }}" \
-              PostgresUri="${{ secrets.POSTGRES_URI }}" \
-              Neo4jUri="${{ secrets.NEO4J_URI }}" \
-              Neo4jPassword="${{ secrets.NEO4J_PASSWORD }}"
+            --no-fail-on-empty-changeset
