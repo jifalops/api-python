@@ -27,6 +27,6 @@ class TokenUser(User):
 
 class FullUser(User):
     sign_in_methods: list[SignInMethod]
-    created_at: Optional[datetime] = None
+    created_at: datetime
     stripe_customer_id: Optional[str] = None
     stripe_subscription_id: Optional[str] = None

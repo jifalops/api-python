@@ -16,10 +16,8 @@ RUN pip install --no-cache-dir -r requirements.txt && \
 COPY config.py ./
 COPY app ./app
 
-ARG PORT=8000
-ENV PORT=$PORT
-ARG WORKERS=4
-ENV WORKERS=$WORKERS
+ENV PORT=8000
+ENV WORKERS=4
 EXPOSE $PORT
 
 CMD gunicorn app.main:app_router -w $WORKERS -k uvicorn.workers.UvicornWorker -b 0.0.0.0:${PORT}

@@ -4,8 +4,10 @@ __pycache__
 .venv
 .bash_history
 .Trash-*
-.env
-.env.*
-!.env.example
+**/.env
+**/.env.*
+!**/.env.example
 .aws-sam
 Pipfile*
+firebase_emulator_data
+firebase-debug.log

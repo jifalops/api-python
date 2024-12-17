@@ -8,7 +8,8 @@
   "postCreateCommand": ".devcontainer/post-create.sh",
   "postStartCommand": ".devcontainer/post-start.sh",
   "features": {
-    "ghcr.io/nullcoder/devcontainer-features/stripe-cli:1": {}
+    "ghcr.io/nullcoder/devcontainer-features/stripe-cli:1": {},
+    "ghcr.io/devcontainers-extra/features/firebase-cli:2": {}
   },
   "customizations": {
     "vscode": {
