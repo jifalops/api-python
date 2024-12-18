@@ -10,8 +10,7 @@ from app.auth.repo_firebase import AuthRepoFirebase
 from app.auth.router import AuthRouter
 from app.auth.service import AuthService
 from app.error import AppError
-from app.subscription.router import SubscriptionRouter
-from app.subscription.router_fastapi import SubscriptionRouterFastApi
+from app.subscription.router import SubscriptionRouter, SubscriptionRouterFastApi
 from app.subscription.service_stripe import SubscriptionServiceStripe
 from app.subscription_portal.service_stripe import SubscriptionPortalServiceStripe
 from app.user.repo_in_mem import UserRepoInMem
