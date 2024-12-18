@@ -4,7 +4,7 @@ import pytest
 
 from app.app import App
 from app.subscription.models import SubscriptionType
-from app.subscription_portal.models import CheckoutStart
+from app.subscription_portal.models import PortalCheckoutStart
 from app.user.models import User
 
 
@@ -16,7 +16,7 @@ from app.user.models import User
 async def test_start_checkout_session(app: App):
     info = await app.subscription_portal.start_checkout(
         User(id="1"),
-        CheckoutStart(
+        PortalCheckoutStart(
             type=SubscriptionType(level="plus", period="monthly"),
             success_url="http://localhost:8000/success",
             cancel_url="http://localhost:8000/cancel",

@@ -6,7 +6,6 @@ from pydantic import BaseModel
 from app.subscription.models import SubscriptionLevel
 
 type Role = Literal["admin", "disabled"]
-
 type SignInMethod = Literal["email_password"]
 
 
