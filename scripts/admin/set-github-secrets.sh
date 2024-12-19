@@ -5,10 +5,9 @@ set -e
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 # Load .env
-set -o allexport
 source "$SCRIPT_DIR/.env"
-set +o allexport
 
+# Change directory for implicit repo resolution.
 pushd "$SCRIPT_DIR" > /dev/null
 
 set_secret() {
