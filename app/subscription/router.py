@@ -14,7 +14,7 @@ class SubscriptionWebhookHandler(ABC):
         raise NotImplementedError()
 
 
-class SubscriptionRouterFastApi(APIRouter):
+class SubscriptionRouter(APIRouter):
     def __init__(
         self, service: SubscriptionService, handler: SubscriptionWebhookHandler
     ):

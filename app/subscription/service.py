@@ -1,29 +1,26 @@
 import asyncio
 from abc import abstractmethod
-from typing import Optional
-
-from stripe import Subscription
 
 from app.service import Service
 from app.subscription.models import (
     PortalCreateSubscription,
     PortalManageBilling,
+    Subscription,
     SubscriptionPortalSessionLink,
 )
-from app.user.models import FullUser, User
+from app.subscription.repo import SubscriptionRepo
+from app.user.models import User
 
 
 class SubscriptionService(Service):
     """Core business logic for subscriptions that must be handled by an adapter."""
 
-    async def get_customer_id(self, user: User) -> Optional[str]:
-        if not isinstance(user, FullUser):
-            user = await self._app.user.get_user(user.id)
-        return user.stripe_customer_id
+    def __init__(self, repo: SubscriptionRepo):
+        self._repo = repo
 
     async def activate_subscription(self, data: Subscription) -> None:
         await asyncio.gather(
-            self._app.user.set_subscription(
+            self._app.user.set_subscription_id(
                 user_id,
                 subscription_id,
             ),

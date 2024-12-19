@@ -1,5 +1,3 @@
-from typing import Optional
-
 from app.database.models import Created
 from app.service import Service
 from app.user.models import FullUser, User
@@ -16,12 +14,14 @@ class UserService(Service):
     async def get_user(self, user_id: str) -> Created[FullUser]:
         return await self._repo.get_user_by_id(user_id)
 
-    async def set_stripe_customer_id(self, user_id: str, customer_id: str) -> None:
-        await self._repo.update_user(user_id, {"stripe_customer_id": customer_id})
+    # async def set_stripe_customer_id(self, user_id: str, customer_id: str) -> None:
+    #     logging.debug(f"Setting Stripe customer ID for user {user_id} to {customer_id}")
+    #     # raise NotImplementedError()
 
-    async def set_stripe_subscription_id(
-        self, user_id: str, subscription_id: Optional[str]
-    ) -> None:
-        await self._repo.update_user(
-            user_id, {"stripe_subscription_id": subscription_id}
-        )
+    # async def set_stripe_subscription_id(
+    #     self, user_id: str, subscription_id: Optional[str]
+    # ) -> None:
+    #     logging.debug(
+    #         f"Setting subscription ID for user {user_id} to {subscription_id}"
+    #     )
+    #     # raise NotImplementedError()

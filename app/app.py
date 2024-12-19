@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from app.auth.service import AuthService
 from app.service import Service
 from app.subscription.service import SubscriptionService
-from app.subscription_portal.service import SubscriptionPortalService
 from app.user.service import UserService
 
 
@@ -17,14 +16,12 @@ class App:
 
     auth: AuthService
     subscription: SubscriptionService
-    subscription_portal: SubscriptionPortalService
     user: UserService
 
     def __post_init__(self):
         self._services: list[Service] = [
             self.auth,
             self.subscription,
-            self.subscription_portal,
             self.user,
         ]
         for service in self._services:

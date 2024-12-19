@@ -1,4 +1,3 @@
-from datetime import datetime
 from http import HTTPStatus
 from typing import Literal, NewType
 
@@ -11,7 +10,14 @@ CustomerId = NewType("CustomerId", str)
 SubscriptionId = NewType("SubscriptionId", str)
 type SubscriptionLevel = Literal["plus", "pro"]
 type SubscriptionPeriod = Literal["monthly", "annual"]
-__all__ = ["CustomerId", "SubscriptionId", "SubscriptionLevel", "SubscriptionPeriod"]
+type SubscriptionEdition = Literal["founder"]
+__all__ = [
+    "CustomerId",
+    "SubscriptionId",
+    "SubscriptionLevel",
+    "SubscriptionPeriod",
+    "SubscriptionEdition",
+]
 
 
 class Customer(BaseModel):
@@ -22,15 +28,15 @@ class Customer(BaseModel):
 class SubscriptionType(BaseModel):
     level: SubscriptionLevel
     period: SubscriptionPeriod
+    edition: SubscriptionEdition
 
 
 class Subscription(BaseModel):
     id: str
-    user_id: str
+    customer_id: str
     type: SubscriptionType
     status: str
     price_id: str
-    created_at: datetime
 
 
 class PortalCreateSubscription(BaseModel):
