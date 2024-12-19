@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Literal, Optional
 
 from pydantic import BaseModel
@@ -26,6 +25,3 @@ class TokenUser(User):
 
 class FullUser(User):
     sign_in_methods: list[SignInMethod]
-    created_at: Optional[datetime] = None
-    stripe_customer_id: Optional[str] = None
-    stripe_subscription_id: Optional[str] = None

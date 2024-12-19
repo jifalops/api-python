@@ -1,4 +1,3 @@
-from datetime import datetime
 from http import HTTPStatus
 from typing import Literal
 
@@ -6,22 +5,29 @@ from pydantic import BaseModel
 
 from app.error import AppError
 
+
+class Customer(BaseModel):
+    id: str
+    user_id: str
+
+
 type SubscriptionLevel = Literal["plus", "pro"]
 type SubscriptionPeriod = Literal["monthly", "annual"]
+type SubscriptionEdition = Literal["founder"]
 
 
 class SubscriptionType(BaseModel):
     level: SubscriptionLevel
     period: SubscriptionPeriod
+    edition: SubscriptionEdition
 
 
 class Subscription(BaseModel):
     id: str
-    user_id: str
+    customer_id: str
     type: SubscriptionType
     status: str
     price_id: str
-    created_at: datetime
 
 
 class PortalCreateSubscription(BaseModel):

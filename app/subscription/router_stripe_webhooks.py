@@ -1,5 +1,3 @@
-import json
-import logging
 from typing import override
 
 import stripe
@@ -7,7 +5,14 @@ from fastapi import Request
 from stripe import Event, SignatureVerificationError, Webhook
 
 from app.error import AppError
-from app.subscription.models import SUBSCRIPTION_TYPE, InvalidWebhookError
+from app.subscription.models import InvalidWebhookError
+from app.subscription.models import Subscription as AppSubscription
+from app.subscription.models import (
+    SubscriptionEdition,
+    SubscriptionLevel,
+    SubscriptionPeriod,
+    SubscriptionType,
+)
 from app.subscription.router import SubscriptionWebhookHandler
 from app.subscription.service import SubscriptionService
 from config import STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET
@@ -37,31 +42,62 @@ class StripeWebhookHandler(SubscriptionWebhookHandler):
             raise InvalidWebhookError("Invalid signature")
 
         if event.type in [
-            "checkout.session.completed",
             "customer.subscription.created",
             "customer.subscription.updated",
             "customer.subscription.deleted",
+            "customer.subscription.paused",
+            "customer.subscription.resumed",
         ]:
             subscription = event.data.object
-            logging.debug(
-                f"Received subscription event: {json.dumps(subscription, indent=2)}"
-            )
-            try:
+            assert subscription["object"] == "subscription"
+
+            if "user_id" in subscription["metadata"]:
                 user_id = subscription["metadata"]["user_id"]
-            except KeyError:
-                # Billing sessions don't have metadata
+            else:
                 customer = stripe.Customer.retrieve(subscription["customer"])
                 if customer.metadata and "user_id" in customer.metadata:
                     user_id = customer.metadata["user_id"]
                 else:
-                    raise AppError("Missing user ID in metadata")
+                    raise AppError("Missing user ID in customer metadata")
 
             if subscription["status"] in ["active", "trialing"]:
-                subscription_id = subscription["id"]
-                price_id = subscription["items"]["data"][0]["price"]["id"]
-                type = SUBSCRIPTION_TYPE[price_id]
+                price = subscription["items"]["data"][0]["price"]
+
+                # period
+                if price["recurring"]["interval"] == "month":
+                    period: SubscriptionPeriod = "monthly"
+                elif price["recurring"]["interval"] == "year":
+                    period = "annual"
+                else:
+                    raise AppError("Unknown subscription period recurrence interval")
+
+                # level and edition
+                if isinstance(price["product"], str):
+                    product = stripe.Product.retrieve(price["product"])
+                else:
+                    product = price["product"]
+
+                if "level" in product["metadata"]:
+                    level: SubscriptionLevel = price["product"]["metadata"]["level"]
+                else:
+                    raise AppError("Missing subscription level in product metadata")
+                if "edition" in product["metadata"]:
+                    edition: SubscriptionEdition = price["product"]["metadata"][
+                        "edition"
+                    ]
+                else:
+                    raise AppError("Missing subscription edition in product metadata")
+
                 await self._service.activate_subscription(
-                    user_id, subscription_id, type
+                    AppSubscription(
+                        id=subscription["id"],
+                        user_id=user_id,
+                        type=SubscriptionType(
+                            level=level, period=period, edition=edition
+                        ),
+                        status=subscription["status"],
+                        price_id=price["id"],
+                    )
                 )
             else:
                 await self._service.deactivate_subscription(user_id)

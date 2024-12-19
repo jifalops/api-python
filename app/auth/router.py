@@ -8,7 +8,7 @@ from app.error import AppError
 from app.user.models import TokenUser
 
 
-class AuthRouterFastApi(APIRouter):
+class AuthRouter(APIRouter):
     def __init__(self, service: AuthService):
         super().__init__(prefix="/auth", tags=["auth"])
         self._service = service

@@ -7,12 +7,12 @@ from mangum import Mangum
 from starlette.middleware.cors import CORSMiddleware
 
 from app.app import App
-from app.auth.router import AuthRouter, AuthRouterFastApi
+from app.auth.router import AuthRouter
 from app.auth.service import AuthService
 from app.error import AppError
-from app.subscription.router import SubscriptionRouter, SubscriptionRouterFastApi
+from app.subscription.router import SubscriptionRouter
+from app.subscription.router_stripe_webhooks import StripeWebhookHandler
 from app.subscription.service_stripe import SubscriptionServiceStripe
-from app.subscription_portal.service_stripe import SubscriptionPortalServiceStripe
 from app.user.service import UserService
 from config import LOGGING_LEVEL
 
@@ -22,13 +22,14 @@ logging.debug("Initializing App...")
 app = App(
     auth=AuthService(),
     subscription=SubscriptionServiceStripe(),
-    subscription_portal=SubscriptionPortalServiceStripe(),
     user=UserService(),
 )
 
 routers: list[APIRouter] = [
-    AuthRouterFastApi(router=AuthRouter(service=app.auth)),
-    SubscriptionRouterFastApi(router=SubscriptionRouter(service=app.subscription)),
+    AuthRouter(service=app.auth),
+    SubscriptionRouter(
+        service=app.subscription, handler=StripeWebhookHandler(app.subscription)
+    ),
 ]
 
 
