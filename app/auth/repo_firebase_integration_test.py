@@ -1,4 +1,5 @@
 import pytest
+import pytest_asyncio
 
 from app.auth.models import (
     AuthInvalidUpdateError,
@@ -7,13 +8,23 @@ from app.auth.models import (
     AuthUserNotFoundError,
 )
 from app.auth.repo import AuthRepo
-from app.auth.repo_memory import AuthRepoMemory
+from app.auth.repo_firebase import AuthRepoFirebase
 from app.user.models import UserId
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")  # type: ignore
 def repo() -> AuthRepo:
-    return AuthRepoMemory()
+    return AuthRepoFirebase("test-auth-repo")
+
+
+@pytest_asyncio.fixture(autouse=True)  # type: ignore
+async def reset_auth(repo: AuthRepo):
+    users = ["user_1", "user_2"]
+    for id in users:
+        try:
+            await repo.delete_user(UserId(id))
+        except AuthUserNotFoundError:
+            continue
 
 
 @pytest.fixture

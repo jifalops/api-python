@@ -1,23 +1,17 @@
 from http import HTTPStatus
-from typing import Literal, NewType
-
-from pydantic import BaseModel
+from typing import Literal
 
 from app.error import AppError
 from app.subscription.models import SubscriptionLevel
+from app.user.models import User
 
-UserId = NewType("UserId", str)
 type Role = Literal["admin"]
+__all__ = ["Role"]
 
 
-class AuthUser(BaseModel):
-    id: UserId
-    name: str | None = None
-    email: str | None = None
-    password: str | None = None
+class AuthUser(User):
     email_verified: bool = False
-    phone: str | None = None
-    avatar: str | None = None
+    password: str | None = None
     disabled: bool = False
     role: Role | None = None
     level: SubscriptionLevel | None = None

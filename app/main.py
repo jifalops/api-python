@@ -6,8 +6,9 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.cors import CORSMiddleware
 
 from app.app import App
+from app.auth.repo_firebase import AuthRepoFirebase
 from app.auth.router import AuthRouter
-from app.auth.service_firebase import AuthServiceFirebase
+from app.auth.service import AuthService
 from app.error import AppError
 from app.subscription.router import SubscriptionRouter
 from app.subscription.router_fastapi import SubscriptionRouterFastApi
@@ -21,7 +22,7 @@ logging.basicConfig(level=LOGGING_LEVEL)
 logging.debug("Initializing App...")
 
 app = App(
-    auth=AuthServiceFirebase(),
+    auth=AuthService(repo=AuthRepoFirebase()),
     subscription=SubscriptionServiceStripe(),
     subscription_portal=SubscriptionPortalServiceStripe(),
     user=UserService(repo=UserRepoInMem()),

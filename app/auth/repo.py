@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from app.auth.models import AuthUser, UserId
+from app.auth.models import AuthUser
+from app.user.models import UserId
 
 
 class AuthRepo(ABC):
@@ -10,7 +11,7 @@ class AuthRepo(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    async def get_user_by_id(self, id: UserId) -> AuthUser:
+    async def get_user_by_id(self, id: UserId) -> AuthUser | None:
         raise NotImplementedError()
 
     @abstractmethod

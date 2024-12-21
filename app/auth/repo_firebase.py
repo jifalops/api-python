@@ -1,24 +1,55 @@
+import json
+import logging
+import os
 from typing import Any, override
 
 from firebase_admin import auth  # type: ignore
+from firebase_admin import credentials, initialize_app  # type: ignore
 
-from app.auth.models import AuthInvalidUpdateError, AuthUser, UserId
+from app.auth.models import (
+    AuthInvalidUpdateError,
+    AuthUser,
+    AuthUserAlreadyExistsError,
+    AuthUserNotFoundError,
+)
 from app.auth.repo import AuthRepo
+from app.user.models import UserId
+from config import FIREBASE_PROJECT_ID, GOOGLE_APPLICATION_CREDENTIALS
 
 
 class AuthRepoFirebase(AuthRepo):
+    def __init__(self, project_id: str = FIREBASE_PROJECT_ID) -> None:
+        options: dict[str, Any] = {
+            "projectId": project_id,
+            "httpTimeout": 10,
+        }
+        if os.environ.get("FIREBASE_AUTH_EMULATOR_HOST", ""):
+            # Firebase Auth checks for that environment variable.
+            logging.warning("Using Firebase Auth Emulator")
+            initialize_app(options=options)
+        else:
+            if not GOOGLE_APPLICATION_CREDENTIALS:
+                raise ValueError("GOOGLE_APPLICATION_CREDENTIALS not set")
+            cred = credentials.Certificate(json.loads(GOOGLE_APPLICATION_CREDENTIALS))
+            initialize_app(credential=cred, options=options)
+
     @override
     async def create_user(self, user: AuthUser) -> None:
         profile = _to_firebase_user(user)
         claims = profile.pop("custom_claims", {})
 
-        auth.create_user(**profile)  # type: ignore
+        try:
+            auth.create_user(**profile)  # type: ignore
+        except auth.UidAlreadyExistsError as e:
+            raise AuthUserAlreadyExistsError() from e
         if len(claims) > 0:
             auth.set_custom_user_claims(user.id, claims)  # type: ignore
 
     @override
-    async def get_user_by_id(self, id: UserId) -> AuthUser:
+    async def get_user_by_id(self, id: UserId) -> AuthUser | None:
         user: auth.UserRecord = auth.get_user(id)  # type: ignore
+        if user is None:
+            return None
         return _from_firebase_user(user)  # type: ignore
 
     @override
@@ -31,13 +62,22 @@ class AuthRepoFirebase(AuthRepo):
         claims = profile.pop("custom_claims", {})
 
         if len(profile) > 0:
-            auth.update_user(id, **profile)  # type: ignore
+            try:
+                auth.update_user(id, **profile)  # type: ignore
+            except auth.UserNotFoundError as e:
+                raise AuthUserNotFoundError() from e
         if len(claims) > 0:
-            auth.set_custom_user_claims(id, claims)  # type: ignore
+            try:
+                auth.set_custom_user_claims(id, claims)  # type: ignore
+            except auth.UserNotFoundError as e:
+                raise AuthUserNotFoundError() from e
 
     @override
     async def delete_user(self, id: UserId) -> None:
-        return auth.delete_user(id)  # type: ignore
+        try:
+            return auth.delete_user(id)  # type: ignore
+        except auth.UserNotFoundError as e:
+            raise AuthUserNotFoundError() from e
 
     @override
     async def is_only_user(self, id: UserId) -> bool:
@@ -77,11 +117,10 @@ def _to_firebase_user(user: AuthUser) -> dict[str, Any]:
         "disabled": user.disabled,
     }
 
-    if user.role is not None or user.level is not None:
-        profile["custom_claims"] = {}
-        if user.role is not None:
-            profile["custom_claims"]["role"] = user.role
-        if user.level is not None:
-            profile["custom_claims"]["level"] = user.level
+    profile["custom_claims"] = {}
+    if user.role is not None:
+        profile["custom_claims"]["role"] = user.role
+    if user.level is not None:
+        profile["custom_claims"]["level"] = user.level
 
     return profile

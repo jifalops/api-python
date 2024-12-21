@@ -1,11 +1,14 @@
-from app.auth.models import AuthUser, Role, UserId
+from app.auth.models import AuthUser, Role
 from app.auth.repo import AuthRepo
 from app.service import Service
 from app.subscription.models import SubscriptionLevel
+from app.user.models import UserId
 
 
 class AuthService(Service):
-    """Business logic around authentication and authorization."""
+    """
+    Business logic around authentication and authorization.
+    """
 
     def __init__(self, repo: AuthRepo):
         self._repo = repo
@@ -30,7 +33,7 @@ class AuthService(Service):
     async def disable_user(self, id: UserId):
         await self._repo.update_user(id, {"disabled": True})
 
-    async def set_subscription_level(self, id: UserId, level: SubscriptionLevel):
+    async def set_subscription_level(self, id: UserId, level: SubscriptionLevel | None):
         await self._repo.update_user(id, {"level": level})
 
     async def delete_user(self, id: UserId):

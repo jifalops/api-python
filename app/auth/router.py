@@ -2,8 +2,9 @@ import jwt
 from fastapi import APIRouter, Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from app.auth.models import AuthUser, InvalidTokenError, Role, UnauthorizedError, UserId
+from app.auth.models import AuthUser, InvalidTokenError, Role, UnauthorizedError
 from app.auth.service import AuthService
+from app.user.models import UserId
 from config import VERIFY_TOKEN_SIGNATURE
 
 _security = HTTPBearer()

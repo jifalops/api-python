@@ -5,9 +5,9 @@ from app.auth.models import (
     AuthUser,
     AuthUserAlreadyExistsError,
     AuthUserNotFoundError,
-    UserId,
 )
 from app.auth.repo import AuthRepo
+from app.user.models import UserId
 
 
 class AuthRepoMemory(AuthRepo):
@@ -21,9 +21,9 @@ class AuthRepoMemory(AuthRepo):
         self._data[user.id] = user.model_dump(mode="json")
 
     @override
-    async def get_user_by_id(self, id: UserId) -> AuthUser:
+    async def get_user_by_id(self, id: UserId) -> AuthUser | None:
         if not id in self._data:
-            raise AuthUserNotFoundError()
+            return None
         return AuthUser(**self._data[id])
 
     @override

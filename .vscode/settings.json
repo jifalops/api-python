@@ -27,13 +27,29 @@
         {
           "name": "dev",
           "commands": [
-            "./scripts/test.sh unit && ./scripts/run.sh"
+            "./scripts/run.sh"
+          ]
+        }
+      ]
+    },
+    {
+      "splitTerminals": [
+        {
+          "name": "test unit",
+          "commands": [
+            "./scripts/test.sh unit"
           ]
         },
         {
-          "name": "stripe",
+          "name": "test integration",
           "commands": [
-            "./scripts/stripe-listen.sh"
+            "./scripts/test.sh integration"
+          ]
+        },
+        {
+          "name": "test e2e",
+          "commands": [
+            "./scripts/test.sh e2e"
           ]
         },
       ]
@@ -52,6 +68,16 @@
             "./scripts/preview_sam.sh"
           ]
         },
+      ]
+    },
+    {
+      "splitTerminals": [
+        {
+          "name": "stripe :8000",
+          "commands": [
+            "./scripts/stripe-listen.sh 8000"
+          ]
+        }
       ]
     },
     {
