@@ -4,7 +4,7 @@ from typing import Any, Optional
 
 from app.service import Service
 from app.subscription.models import SubscriptionType
-from app.user.models import FullUser, User
+from app.user.models import User
 
 
 class SubscriptionService(Service):
@@ -30,7 +30,7 @@ class SubscriptionService(Service):
         raise NotImplementedError()
 
     async def get_customer_id(self, user: User) -> Optional[str]:
-        if not isinstance(user, FullUser):
+        if not isinstance(user, User):
             user = await self._app.user.get_user(user.id)
 
         return user.stripe_customer_id

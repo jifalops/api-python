@@ -3,7 +3,6 @@ from contextlib import asynccontextmanager
 
 from fastapi import APIRouter, FastAPI, Request
 from fastapi.responses import JSONResponse
-from mangum import Mangum
 from starlette.middleware.cors import CORSMiddleware
 
 from app.app import App
@@ -14,6 +13,7 @@ from app.subscription.router import SubscriptionRouter
 from app.subscription.router_fastapi import SubscriptionRouterFastApi
 from app.subscription.service_stripe import SubscriptionServiceStripe
 from app.subscription_portal.service_stripe import SubscriptionPortalServiceStripe
+from app.user.repo_in_mem import UserRepoInMem
 from app.user.service import UserService
 from config import LOGGING_LEVEL
 
@@ -24,7 +24,7 @@ app = App(
     auth=AuthServiceFirebase(),
     subscription=SubscriptionServiceStripe(),
     subscription_portal=SubscriptionPortalServiceStripe(),
-    user=UserService(),
+    user=UserService(repo=UserRepoInMem()),
 )
 
 routers: list[APIRouter] = [
@@ -54,14 +54,17 @@ for router in routers:
     app_router.include_router(router)
 app_router.get("/")(lambda: {"Hello": "World"})
 
-lambda_handler = Mangum(app_router)
-
 
 @app_router.exception_handler(AppError)
-async def app_error_handler(request: Request, e: AppError):
+async def app_error_handler(_: Request, e: AppError):
     return JSONResponse(
         status_code=e.status,
-        content={"error": {"code": e.code, "message": e.message, "details": e.details}},
+        content={
+            "error": {
+                "code": e.code,
+                "message": e.message,
+            }
+        },
     )
 
 

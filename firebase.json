@@ -4,8 +4,7 @@
       "port": 9099
     },
     "ui": {
-      "enabled": true,
-      "port": 9090
+      "enabled": true
     },
     "singleProjectMode": true
   }

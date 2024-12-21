@@ -1,33 +1,27 @@
-import logging
-from datetime import datetime
 from typing import Optional
 
+from app.database.models import Created
 from app.service import Service
-from app.user.models import FullUser
+from app.user.models import FullUser, User
+from app.user.repo import UserRepo
 
 
 class UserService(Service):
-    async def create_user(self, user: FullUser) -> None:
-        logging.warning(f"Creating user {user.id}")
-        # raise NotImplementedError()
+    def __init__(self, repo: UserRepo) -> None:
+        self._repo = repo
 
-    async def get_user(self, user_id: str) -> FullUser:
-        logging.warning(f"Returning fake user")
-        return FullUser(
-            id=user_id,
-            created_at=datetime.now(),
-            sign_in_methods=["email_password"],
-        )
-        # raise NotImplementedError()
+    async def create_user(self, user: User) -> None:
+        await self._repo.create_user(user)
+
+    async def get_user(self, user_id: str) -> Created[FullUser]:
+        return await self._repo.get_user_by_id(user_id)
 
     async def set_stripe_customer_id(self, user_id: str, customer_id: str) -> None:
-        logging.debug(f"Setting Stripe customer ID for user {user_id} to {customer_id}")
-        # raise NotImplementedError()
+        await self._repo.update_user(user_id, {"stripe_customer_id": customer_id})
 
     async def set_stripe_subscription_id(
         self, user_id: str, subscription_id: Optional[str]
     ) -> None:
-        logging.debug(
-            f"Setting subscription ID for user {user_id} to {subscription_id}"
+        await self._repo.update_user(
+            user_id, {"stripe_subscription_id": subscription_id}
         )
-        # raise NotImplementedError()

@@ -27,7 +27,13 @@
         {
           "name": "dev",
           "commands": [
-            "./scripts/run.sh"
+            "./scripts/test.sh unit && ./scripts/run.sh"
+          ]
+        },
+        {
+          "name": "stripe",
+          "commands": [
+            "./scripts/stripe-listen.sh"
           ]
         },
       ]
@@ -44,16 +50,6 @@
           "name": "SAM preview",
           "commands": [
             "./scripts/preview_sam.sh"
-          ]
-        },
-      ]
-    },
-    {
-      "splitTerminals": [
-        {
-          "name": "stripe",
-          "commands": [
-            "./scripts/stripe-listen.sh"
           ]
         },
       ]

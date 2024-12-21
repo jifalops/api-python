@@ -28,8 +28,8 @@ class App:
             self.user,
         ]
         for service in self._services:
-            service._set_app(self)  # type: ignore
+            service._app = self  # type: ignore
 
-    async def shutdown(self):
+    async def shutdown(self) -> None:
         for service in self._services:
             await service.destroy()

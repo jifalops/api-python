@@ -1,39 +1,37 @@
-from abc import abstractmethod
-from datetime import datetime
-from typing import Optional
-
+from app.auth.models import AuthUser, Role, UserId
+from app.auth.repo import AuthRepo
 from app.service import Service
 from app.subscription.models import SubscriptionLevel
-from app.user.models import FullUser, Role, TokenUser
 
 
 class AuthService(Service):
-    """The service that contains the core business logic for authentication."""
+    """Business logic around authentication and authorization."""
 
-    async def sign_up(self, user: TokenUser) -> None:
-        await self._app.user.create_user(
-            FullUser(
-                id=user.id,
-                name=user.name,
-                email=user.email,
-                email_verified=user.email_verified,
-                phone=user.phone,
-                photo_url=user.photo_url,
-                sign_in_methods=[user.sign_in_method],
-                created_at=datetime.now(),
-            )
-        )
+    def __init__(self, repo: AuthRepo):
+        self._repo = repo
 
-    @abstractmethod
-    async def set_role(self, user_id: str, role: Optional[Role]) -> None:
-        raise NotImplementedError()
+    async def sign_up(self, user: AuthUser) -> None:
+        await self._repo.create_user(user)
 
-    @abstractmethod
-    async def set_subscription_level(
-        self, user_id: str, level: Optional[SubscriptionLevel]
-    ) -> None:
-        raise NotImplementedError()
+    async def get_user(self, id: UserId) -> AuthUser:
+        return await self._repo.get_user_by_id(id)
 
-    @abstractmethod
-    async def is_only_user(self, user_id: str) -> bool:
-        raise NotImplementedError()
+    async def set_role(self, id: UserId, role: Role):
+        await self._repo.update_user(id, {"role": role})
+
+    async def is_only_user(self, id: UserId) -> bool:
+        """
+        Check if the user is the only user in the system.
+
+        This is useful for bootstrapping the first admin user.
+        """
+        return await self._repo.is_only_user(id)
+
+    async def disable_user(self, id: UserId):
+        await self._repo.update_user(id, {"disabled": True})
+
+    async def set_subscription_level(self, id: UserId, level: SubscriptionLevel):
+        await self._repo.update_user(id, {"level": level})
+
+    async def delete_user(self, id: UserId):
+        await self._repo.delete_user(id)
