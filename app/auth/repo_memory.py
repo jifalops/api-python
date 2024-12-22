@@ -21,9 +21,9 @@ class AuthRepoMemory(AuthRepo):
         self._data[user.id] = user.model_dump(mode="json")
 
     @override
-    async def get_user_by_id(self, id: UserId) -> AuthUser | None:
+    async def get_user_by_id(self, id: UserId) -> AuthUser:
         if not id in self._data:
-            return None
+            raise AuthUserNotFoundError()
         return AuthUser(**self._data[id])
 
     @override

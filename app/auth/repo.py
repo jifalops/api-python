@@ -11,7 +11,7 @@ class AuthRepo(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    async def get_user_by_id(self, id: UserId) -> AuthUser | None:
+    async def get_user_by_id(self, id: UserId) -> AuthUser:
         raise NotImplementedError()
 
     @abstractmethod

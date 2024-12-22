@@ -43,13 +43,17 @@ class AuthRepoFirebase(AuthRepo):
         except auth.UidAlreadyExistsError as e:
             raise AuthUserAlreadyExistsError() from e
         if len(claims) > 0:
-            auth.set_custom_user_claims(user.id, claims)  # type: ignore
+            try:
+                auth.set_custom_user_claims(user.id, claims)  # type: ignore
+            except auth.UserNotFoundError as e:
+                raise AuthUserNotFoundError() from e
 
     @override
-    async def get_user_by_id(self, id: UserId) -> AuthUser | None:
-        user: auth.UserRecord = auth.get_user(id)  # type: ignore
-        if user is None:
-            return None
+    async def get_user_by_id(self, id: UserId) -> AuthUser:
+        try:
+            user: auth.UserRecord = auth.get_user(id)  # type: ignore
+        except auth.UserNotFoundError as e:
+            raise AuthUserNotFoundError() from e
         return _from_firebase_user(user)  # type: ignore
 
     @override
@@ -57,9 +61,13 @@ class AuthRepoFirebase(AuthRepo):
         if "id" in data and data["id"] != id:
             raise AuthInvalidUpdateError()
 
-        profile = _to_firebase_user(AuthUser(id=id, **data))
+        profile = _to_firebase_user(AuthUser(**data))
         del profile["uid"]
         claims = profile.pop("custom_claims", {})
+
+        for key, value in profile.items():
+            if value is None and key in ["display_name", "phone_number", "photo_url"]:
+                profile[key] = auth.DELETE_ATTRIBUTE
 
         if len(profile) > 0:
             try:
@@ -86,6 +94,7 @@ class AuthRepoFirebase(AuthRepo):
 
 
 def _from_firebase_user(user: auth.UserRecord) -> AuthUser:
+    logging.debug(f"Translating Firebase user: {user}")
     return AuthUser(
         id=user.uid,  # type: ignore
         name=user.display_name,  # type: ignore

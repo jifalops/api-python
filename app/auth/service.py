@@ -19,7 +19,7 @@ class AuthService(Service):
     async def get_user(self, id: UserId) -> AuthUser:
         return await self._repo.get_user_by_id(id)
 
-    async def set_role(self, id: UserId, role: Role):
+    async def set_role(self, id: UserId, role: Role | None):
         await self._repo.update_user(id, {"role": role})
 
     async def is_only_user(self, id: UserId) -> bool:

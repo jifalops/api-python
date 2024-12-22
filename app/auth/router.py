@@ -15,7 +15,9 @@ def decode_jwt(
 ) -> AuthUser:
     token = credentials.credentials
     try:
-        claims = jwt.decode(token, do_verify=VERIFY_TOKEN_SIGNATURE)
+        claims = jwt.decode(
+            jwt=token, options={"verify_signature": VERIFY_TOKEN_SIGNATURE}
+        )
     except Exception as e:
         raise InvalidTokenError() from e
 
@@ -38,9 +40,12 @@ class AuthRouter(APIRouter):
         await self._service.sign_up(user)
 
     async def set_role(
-        self, user_id: UserId, role: Role, user: AuthUser = Depends(decode_jwt)
+        self,
+        user_id: str,
+        role: Role | None = None,
+        user: AuthUser = Depends(decode_jwt),
     ) -> None:
         if user.role == "admin" or await self._service.is_only_user(user.id):
-            await self._service.set_role(user_id, role)
+            await self._service.set_role(UserId(user_id), role)
         else:
             raise UnauthorizedError()
