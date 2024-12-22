@@ -26,6 +26,8 @@ jobs:
           pip install poetry
           poetry install --no-interaction
       - name: Run tests
+        env:
+          VERIFY_TOKEN_SIGNATURE: 0
         run: ./scripts/test.sh unit
 
       - uses: aws-actions/configure-aws-credentials@v4
