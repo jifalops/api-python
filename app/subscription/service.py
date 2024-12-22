@@ -1,13 +1,16 @@
 import asyncio
 from abc import abstractmethod
-from typing import Any, Optional
+from typing import Any
 
 from app.service import Service
-from app.subscription.models import SubscriptionType
-from app.user.models import FullUser, User
+from app.subscription.models import CustomerId, SubscriptionId, SubscriptionType
+from app.subscription.repo import SubscriptionRepo
+from app.user.models import User, UserId
 
 
 class SubscriptionService(Service):
+    def __init__(self, repo: SubscriptionRepo):
+        self._repo = repo
 
     @abstractmethod
     async def create_customer_if_necessary(self, user: User) -> str:
@@ -29,22 +32,18 @@ class SubscriptionService(Service):
     def subscription_type(self, type_id: str) -> SubscriptionType:
         raise NotImplementedError()
 
-    async def get_customer_id(self, user: User) -> Optional[str]:
-        if not isinstance(user, FullUser):
-            user = await self._app.user.get_user(user.id)
-
-        return user.stripe_customer_id
-
     async def _handle_activation(
-        self, user_id: str, subscription_id: str, type: SubscriptionType
+        self, user_id: UserId, subscription_id: SubscriptionId, type: SubscriptionType
     ) -> None:
         await asyncio.gather(
-            self._app.user.set_stripe_subscription_id(user_id, subscription_id),
+            self._repo.set_subscription_id(user_id, subscription_id),
             self._app.auth.set_subscription_level(user_id, type.level),
         )
 
-    async def _handle_deactivation(self, user_id: str) -> None:
+    async def _handle_deactivation(
+        self, user_id: UserId, customer_id: CustomerId
+    ) -> None:
         await asyncio.gather(
-            self._app.user.set_stripe_subscription_id(user_id, None),
+            self._repo.set_subscription_id(customer_id, None),
             self._app.auth.set_subscription_level(user_id, None),
         )

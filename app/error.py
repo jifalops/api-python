@@ -1,6 +1,6 @@
 import logging
 from http import HTTPStatus
-from typing import LiteralString, Optional
+from typing import Any, LiteralString
 
 
 class AppError(Exception):
@@ -8,30 +8,31 @@ class AppError(Exception):
 
     def __init__(
         self,
-        code: LiteralString = "error/internal",
+        code: LiteralString,
         status: HTTPStatus = HTTPStatus.INTERNAL_SERVER_ERROR,
-        message: Optional[str] = None,
-        exception: Optional[Exception] = None,
-        details: Optional[dict[str, object]] = None,
+        message: str | None = None,
+        detail: Any = None,
     ):
         super().__init__(f"{code}: {message}")
+
+        self.status = status
 
         self.code: str = code
         """A string in the form `category/error-name`, e.g. `user/not-found`."""
 
-        self.message = message
-        self.status = status
+        self.message: str = message or self.status.phrase
+        """A message to be sent along with the error code. Defaults to the [status] phrase."""
 
-        self.details = details
-        """Additional information about the error."""
+        self.detail: Any = detail
+        """Additional information about the error that will be logged internally."""
 
         # Log the error
-        parts = [f"code: {code}"]
-        if message:
-            parts.append(f"message: {message}")
-        if exception:
-            parts.append(f"exception: {exception}")
-        if details:
-            parts.append(f"details: {details}")
-        parts.append(f"status={status}")
+        parts = [
+            f"status: {status}",
+            f"code: {code}",
+            f"message: {message}",
+        ]
+        if detail:
+            parts.append(f"detail: {detail}")
+
         logging.error("\n".join(parts))

@@ -35,4 +35,4 @@ set_param "stripe-public-key" "$PROD_STRIPE_PUBLIC_KEY"
 set_secret "stripe-secret-key" "$PROD_STRIPE_SECRET_KEY"
 set_secret "stripe-webhook-secret" "$PROD_STRIPE_WEBHOOK_SECRET"
 set_param "firebase-project-id" "$PROD_FIREBASE_PROJECT_ID"
-
+set_secret "google-application-credentials" "$PROD_GOOGLE_APPLICATION_CREDENTIALS"

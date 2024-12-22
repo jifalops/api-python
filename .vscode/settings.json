@@ -29,6 +29,28 @@
           "commands": [
             "./scripts/run.sh"
           ]
+        }
+      ]
+    },
+    {
+      "splitTerminals": [
+        {
+          "name": "test unit",
+          "commands": [
+            "./scripts/test.sh unit"
+          ]
+        },
+        {
+          "name": "test integration",
+          "commands": [
+            "./scripts/test.sh integration"
+          ]
+        },
+        {
+          "name": "test e2e",
+          "commands": [
+            "./scripts/test.sh e2e"
+          ]
         },
       ]
     },
@@ -51,11 +73,11 @@
     {
       "splitTerminals": [
         {
-          "name": "stripe",
+          "name": "stripe :8000",
           "commands": [
-            "./scripts/stripe-listen.sh"
+            "./scripts/stripe-listen.sh 8000"
           ]
-        },
+        }
       ]
     },
     {
@@ -88,6 +110,8 @@
     "!Join sequence"
   ],
   "python.testing.pytestArgs": [
-    "tests"
+    "."
   ],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
 }

@@ -14,10 +14,6 @@ class Service:
     Services may call other services by using `self.app.<service>`.
     """
 
-    def _set_app(self, app: "App") -> None:
-        """Intended to be called by the `App` class only."""
-        self._app = app
-
     async def destroy(self) -> None:
         """Clean up resources, the app is exiting."""
         pass

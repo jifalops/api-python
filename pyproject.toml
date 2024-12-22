@@ -9,7 +9,6 @@ package-mode = false
 [tool.poetry.dependencies]
 python = "^3.12"
 fastapi = "^0.115.5"
-
 mangum = "^0.19.0"
 pydantic = "^2.9.2"
 pydantic-extra-types = "^2.10.0"
@@ -18,6 +17,8 @@ shortuuid = "^1.0.13"
 email-validator = "^2.2.0"
 psycopg = "^3.2.3"
 stripe = "^11.3.0"
+firebase-admin = "^6.6.0"
+pyjwt = "^2.10.1"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -27,6 +28,7 @@ uvicorn = "^0.32.0"
 pytest-asyncio = "^0.24.0"
 black = "^24.10.0"
 requests = "^2.32.3"
+httpx = "^0.28.1"
 
 [build-system]
 requires = ["poetry-core"]
@@ -34,5 +36,18 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 pythonpath = "."
-addopts = "--import-mode=importlib"
+python_classes = '*Test'
+addopts = [
+  "--import-mode=importlib",
+  "--tb=line",
+  '--verbosity=2',
+  '--no-header',
+  '--color=yes',
+]
+console_output_style = "progress"
 asyncio_default_fixture_loop_scope = "function"
+markers = [
+  "unit: marks tests as unit tests",
+  "integration: marks tests requiring external services",
+  "e2e: marks tests as end-to-end tests",
+]

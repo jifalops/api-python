@@ -14,3 +14,6 @@ RUN VERSION=$(basename $(curl -Ls -o /dev/null -w %{url_effective} https://githu
     unzip -jo nmig.zip "*/completion/neo4j-migrations_completion" -d ~/.local/share/bash-completion/completions/ && \
     mv ~/.local/share/bash-completion/completions/neo4j-migrations_completion ~/.local/share/bash-completion/completions/neo4j-migrations && \
     rm nmig.zip
+
+# Install firebase-tools (The npm installer on https://containers.dev/features is extremely slow)
+RUN curl -sL https://firebase.tools | bash
