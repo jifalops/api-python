@@ -2,6 +2,8 @@
   "python.defaultInterpreterPath": ".venv/bin/python",
   "python.terminal.activateEnvironment": false,
   "python.terminal.activateEnvInCurrentTerminal": false,
+  "github.copilot.chat.copilotDebugCommand.enabled": false,
+  "git.terminalAuthentication": false,
   "python.analysis.typeCheckingMode": "strict",
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter",
@@ -35,21 +37,9 @@
     {
       "splitTerminals": [
         {
-          "name": "test unit",
+          "name": "tests",
           "commands": [
-            "./scripts/test.sh unit"
-          ]
-        },
-        {
-          "name": "test integration",
-          "commands": [
-            "./scripts/test.sh integration"
-          ]
-        },
-        {
-          "name": "test e2e",
-          "commands": [
-            "./scripts/test.sh e2e"
+            "sleep 10; ./scripts/test.sh unit && ./scripts/test.sh integration && ./scripts/test.sh e2e"
           ]
         },
       ]

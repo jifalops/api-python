@@ -3,11 +3,11 @@ from typing import override
 import pytest
 import pytest_asyncio
 
-from app.auth.models import AuthUser, AuthUserNotFoundError
+from app.auth.models import AuthUser
 from app.auth.repo import AuthRepo
 from app.auth.repo_firebase import AuthRepoFirebase
 from app.auth.repo_test import AuthRepoTest
-from app.user.models import UserId
+from app.user.models import UserId, UserNotFoundError
 
 
 class AuthRepoFirebaseTest(AuthRepoTest):
@@ -22,7 +22,7 @@ class AuthRepoFirebaseTest(AuthRepoTest):
         for id in users:
             try:
                 await repo.delete_user(UserId(id))
-            except AuthUserNotFoundError:
+            except UserNotFoundError:
                 continue
 
     @pytest.mark.asyncio

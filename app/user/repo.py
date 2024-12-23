@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from app.database.models import Created
-from app.user.models import FullUser, User
+from app.user.models import FullUser, User, UserId
 
 
 class UserRepo(ABC):
@@ -11,9 +10,13 @@ class UserRepo(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    async def get_user_by_id(self, user_id: str) -> Created[FullUser]:
+    async def get_user_by_id(self, id: UserId) -> FullUser:
         raise NotImplementedError()
 
     @abstractmethod
-    async def update_user(self, user_id: str, data: dict[str, Any]) -> None:
+    async def update_user(self, id: UserId, data: dict[str, Any]) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
+    async def delete_user(self, id: UserId) -> None:
         raise NotImplementedError()

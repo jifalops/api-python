@@ -1,30 +1,36 @@
 from typing import Any, override
 
-from app.auth.models import AuthInvalidUpdateError, AuthUser
-from app.auth.repo import AuthRepo
-from app.user.models import UserAlreadyExistsError, UserId, UserNotFoundError
+from app.user.models import (
+    FullUser,
+    User,
+    UserAlreadyExistsError,
+    UserId,
+    UserInvalidUpdateError,
+    UserNotFoundError,
+)
+from app.user.repo import UserRepo
 
 
-class AuthRepoMemory(AuthRepo):
-    def __init__(self) -> None:
+class UserRepoMemory(UserRepo):
+    def __init__(self):
         self._data: dict[UserId, dict[str, Any]] = {}
 
     @override
-    async def create_user(self, user: AuthUser) -> None:
+    async def create_user(self, user: User) -> None:
         if user.id in self._data:
             raise UserAlreadyExistsError()
         self._data[user.id] = user.model_dump(mode="json")
 
     @override
-    async def get_user_by_id(self, id: UserId) -> AuthUser:
+    async def get_user_by_id(self, id: UserId) -> FullUser:
         if not id in self._data:
             raise UserNotFoundError()
-        return AuthUser(**self._data[id])
+        return FullUser(**self._data[id])
 
     @override
     async def update_user(self, id: UserId, data: dict[str, Any]) -> None:
         if "id" in data and data["id"] != id:
-            raise AuthInvalidUpdateError()
+            raise UserInvalidUpdateError()
         if not id in self._data:
             raise UserNotFoundError()
         self._data[id].update(data)
@@ -34,7 +40,3 @@ class AuthRepoMemory(AuthRepo):
         if not id in self._data:
             raise UserNotFoundError()
         del self._data[id]
-
-    @override
-    async def is_only_user(self, id: UserId) -> bool:
-        return len(self._data) == 1 and id in self._data

@@ -3,9 +3,9 @@ import pytest
 from app.app import App
 from app.auth.repo_firebase import AuthRepoFirebase
 from app.auth.service import AuthService
-from app.subscription.service_stripe import SubscriptionServiceStripe
-from app.subscription_portal.service_stripe import SubscriptionPortalServiceStripe
-from app.user.repo_in_mem import UserRepoInMem
+from app.subscription.adapters.repo_memory import SubscriptionRepoMemory
+from app.subscription.adapters.service_stripe import SubscriptionServiceStripe
+from app.user.repo_memory import UserRepoMemory
 from app.user.service import UserService
 
 
@@ -13,7 +13,6 @@ from app.user.service import UserService
 def app():
     return App(
         auth=AuthService(repo=AuthRepoFirebase()),
-        subscription=SubscriptionServiceStripe(),
-        subscription_portal=SubscriptionPortalServiceStripe(),
-        user=UserService(repo=UserRepoInMem()),
+        subscription=SubscriptionServiceStripe(repo=SubscriptionRepoMemory()),
+        user=UserService(repo=UserRepoMemory()),
     )

@@ -1,6 +1,6 @@
-from app.database.models import Created
 from app.service import Service
-from app.user.models import FullUser, User
+from app.subscription.models import CustomerId, SubscriptionId
+from app.user.models import FullUser, User, UserId
 from app.user.repo import UserRepo
 
 
@@ -11,17 +11,24 @@ class UserService(Service):
     async def create_user(self, user: User) -> None:
         await self._repo.create_user(user)
 
-    async def get_user(self, user_id: str) -> Created[FullUser]:
-        return await self._repo.get_user_by_id(user_id)
+    async def get_user(self, id: UserId) -> FullUser:
+        return await self._repo.get_user_by_id(id)
 
-    # async def set_stripe_customer_id(self, user_id: str, customer_id: str) -> None:
-    #     logging.debug(f"Setting Stripe customer ID for user {user_id} to {customer_id}")
-    #     # raise NotImplementedError()
+    async def get_customer(self, id: CustomerId) -> FullUser:
+        return await self._repo.get_user_by_customer_id(id)
 
-    # async def set_stripe_subscription_id(
-    #     self, user_id: str, subscription_id: Optional[str]
-    # ) -> None:
-    #     logging.debug(
-    #         f"Setting subscription ID for user {user_id} to {subscription_id}"
-    #     )
-    #     # raise NotImplementedError()
+    async def get_subscriber(self, id: SubscriptionId) -> FullUser:
+        return await self._repo.get_user_by_subscription_id(id)
+
+    async def set_customer_id(
+        self, user_id: UserId, customer_id: CustomerId | None
+    ) -> None:
+        await self._repo.update_user(
+            user_id,
+            {"customer_id": customer_id},
+        )
+
+    async def set_subscription_id(
+        self, user_id: UserId, subscription_id: SubscriptionId | None
+    ) -> None:
+        await self._repo.update_user(user_id, {"subscription_id": subscription_id})

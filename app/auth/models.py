@@ -36,19 +36,9 @@ class UnauthorizedError(AppError):
         super().__init__(code="auth/unauthorized", status=HTTPStatus.UNAUTHORIZED)
 
 
-class AuthUserNotFoundError(AppError):
-    def __init__(self):
-        super().__init__(code="auth/user-not-found", status=HTTPStatus.NOT_FOUND)
-
-
 class AuthUserDisabledError(AppError):
     def __init__(self):
         super().__init__(code="auth/user-disabled", status=HTTPStatus.FORBIDDEN)
-
-
-class AuthUserAlreadyExistsError(AppError):
-    def __init__(self):
-        super().__init__(code="auth/user-already-exists", status=HTTPStatus.BAD_REQUEST)
 
 
 class AuthInvalidUpdateError(AppError):

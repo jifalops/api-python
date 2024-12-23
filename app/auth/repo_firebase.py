@@ -3,17 +3,11 @@ import logging
 import os
 from typing import Any, override
 
-from firebase_admin import auth  # type: ignore
-from firebase_admin import credentials, initialize_app  # type: ignore
+from firebase_admin import auth, credentials, initialize_app  # type: ignore
 
-from app.auth.models import (
-    AuthInvalidUpdateError,
-    AuthUser,
-    AuthUserAlreadyExistsError,
-    AuthUserNotFoundError,
-)
+from app.auth.models import AuthInvalidUpdateError, AuthUser
 from app.auth.repo import AuthRepo
-from app.user.models import UserId
+from app.user.models import UserAlreadyExistsError, UserId, UserNotFoundError
 from config import FIREBASE_PROJECT_ID, GOOGLE_APPLICATION_CREDENTIALS
 
 
@@ -39,21 +33,24 @@ class AuthRepoFirebase(AuthRepo):
         claims = profile.pop("custom_claims", {})
 
         try:
-            auth.create_user(**profile)  # type: ignore
+            auth.create_user(**profile)  # pyright: ignore[reportUnknownMemberType]
         except auth.UidAlreadyExistsError as e:
-            raise AuthUserAlreadyExistsError() from e
+            raise UserAlreadyExistsError() from e
         if len(claims) > 0:
             try:
-                auth.set_custom_user_claims(user.id, claims)  # type: ignore
+                auth.set_custom_user_claims(  # pyright: ignore[reportUnknownMemberType]
+                    user.id,
+                    claims,
+                )
             except auth.UserNotFoundError as e:
-                raise AuthUserNotFoundError() from e
+                raise UserNotFoundError() from e
 
     @override
     async def get_user_by_id(self, id: UserId) -> AuthUser:
         try:
             user: auth.UserRecord = auth.get_user(id)  # type: ignore
         except auth.UserNotFoundError as e:
-            raise AuthUserNotFoundError() from e
+            raise UserNotFoundError() from e
         return _from_firebase_user(user)  # type: ignore
 
     @override
@@ -73,19 +70,19 @@ class AuthRepoFirebase(AuthRepo):
             try:
                 auth.update_user(id, **profile)  # type: ignore
             except auth.UserNotFoundError as e:
-                raise AuthUserNotFoundError() from e
+                raise UserNotFoundError() from e
         if len(claims) > 0:
             try:
                 auth.set_custom_user_claims(id, claims)  # type: ignore
             except auth.UserNotFoundError as e:
-                raise AuthUserNotFoundError() from e
+                raise UserNotFoundError() from e
 
     @override
     async def delete_user(self, id: UserId) -> None:
         try:
             return auth.delete_user(id)  # type: ignore
         except auth.UserNotFoundError as e:
-            raise AuthUserNotFoundError() from e
+            raise UserNotFoundError() from e
 
     @override
     async def is_only_user(self, id: UserId) -> bool:

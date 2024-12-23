@@ -1,10 +1,11 @@
+from abc import ABC
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from app.app import App
 
 
-class Service:
+class Service(ABC):
     """Base class for all services."""
 
     _app: "App"

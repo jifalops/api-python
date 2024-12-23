@@ -10,10 +10,13 @@ from app.auth.repo_firebase import AuthRepoFirebase
 from app.auth.router import AuthRouter
 from app.auth.service import AuthService
 from app.error import AppError
+from app.subscription.adapters.repo_memory import SubscriptionRepoMemory
+from app.subscription.adapters.router_webhooks_stripe import (
+    SubscriptionRouterWebhooksStripe,
+)
+from app.subscription.adapters.service_stripe import SubscriptionServiceStripe
 from app.subscription.router import SubscriptionRouter
-from app.subscription.router_stripe_webhooks import StripeWebhookHandler
-from app.subscription.service_stripe import SubscriptionServiceStripe
-from app.user.repo_in_mem import UserRepoInMem
+from app.user.repo_memory import UserRepoMemory
 from app.user.service import UserService
 from config import LOGGING_LEVEL
 
@@ -22,14 +25,15 @@ logging.debug("Initializing App...")
 
 app = App(
     auth=AuthService(repo=AuthRepoFirebase()),
-    subscription=SubscriptionServiceStripe(),
-    user=UserService(repo=UserRepoInMem()),
+    subscription=SubscriptionServiceStripe(repo=SubscriptionRepoMemory()),
+    user=UserService(repo=UserRepoMemory()),
 )
 
 routers: list[APIRouter] = [
     AuthRouter(service=app.auth),
     SubscriptionRouter(
-        service=app.subscription, handler=StripeWebhookHandler(app.subscription)
+        service=app.subscription,
+        webhook_handler=SubscriptionRouterWebhooksStripe(service=app.subscription),
     ),
 ]
 

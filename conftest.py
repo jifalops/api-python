@@ -9,12 +9,12 @@ from app.auth.repo_memory import AuthRepoMemory
 from app.auth.router import AuthRouter
 from app.auth.service import AuthService
 from app.error import AppError
-from app.subscription.repo import SubscriptionRepo
+from app.subscription.adapters.router_webhooks_mock import (
+    SubscriptionRouterWebhooksMock,
+)
+from app.subscription.adapters.service_mock import SubscriptionServiceMock
 from app.subscription.router import SubscriptionRouter
-from app.subscription.router_fastapi import SubscriptionRouterFastApi
-from app.subscription.service_mock import SubscriptionServiceMock
-from app.subscription_portal.service_stripe import SubscriptionPortalServiceStripe
-from app.user.repo_in_mem import UserRepoInMem
+from app.user.repo_memory import UserRepoMemory
 from app.user.service import UserService
 
 
@@ -23,9 +23,8 @@ def app() -> App:
     """The default app fixture for unit tests."""
     return App(
         auth=AuthService(repo=AuthRepoMemory()),
-        subscription=SubscriptionServiceMock(repo=SubscriptionRepo()),
-        subscription_portal=SubscriptionPortalServiceStripe(),
-        user=UserService(repo=UserRepoInMem()),
+        subscription=SubscriptionServiceMock(),
+        user=UserService(repo=UserRepoMemory()),
     )
 
 
@@ -33,7 +32,9 @@ def app() -> App:
 def app_router(app: App) -> FastAPI:
     routers: list[APIRouter] = [
         AuthRouter(service=app.auth),
-        SubscriptionRouterFastApi(router=SubscriptionRouter(service=app.subscription)),
+        SubscriptionRouter(
+            service=app.subscription, webhook_handler=SubscriptionRouterWebhooksMock()
+        ),
     ]
     router = FastAPI()
     for r in routers:
